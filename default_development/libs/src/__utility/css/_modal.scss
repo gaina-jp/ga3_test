@@ -1,0 +1,103 @@
+@use "variables";
+@use "module";
+
+.g-modal {
+  display: none;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  &-wrap {
+    display: block;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: .1px 0;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1002;
+    overflow: auto;
+
+    @media screen and (min-width: 829px) {
+      display: block;
+    }
+  }
+
+  &-content {
+    display: none;
+    width: calc(792 / #{1000} * 100%);
+    background: #fff;
+    box-sizing: border-box;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+
+    @media screen and (min-width: 829px) {
+      width: #{$maxW}px;
+      margin: 20px auto;
+    }
+
+    &--open {
+      display: grid;
+      //place-content: center;
+    }
+
+    &.not-centering {
+      place-content: inherit;
+      overflow: auto;
+    }
+
+    &.show {
+      .g-modal-box {
+        transform: translate(0);
+        opacity: 1;
+      }
+    }
+  }
+
+  &-box {
+    width: calc(764 / #{784} * 100%);
+    background: #fff;
+    margin: calc(6 / #{784} * 100%) auto;
+    transform: translate(0);
+    opacity: 0;
+  }
+
+
+  &--close {
+    text-align: center;
+    margin: 0 0 calc(80 / #{784} * 100%);
+    cursor: pointer;
+
+    span {
+      text-decoration: underline;
+    }
+  }
+
+  &-overlay {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 0;
+  }
+
+  &--btn {
+    cursor: pointer;
+  }
+}
+
+#modal_item {
+  .g-modal {
+  }
+}

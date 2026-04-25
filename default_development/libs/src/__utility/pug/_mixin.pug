@@ -1,0 +1,24 @@
+mixin img(src, alt, _class)
+  - const { width, height } = imageSize(src);
+    if(!alt)
+      - alt = ""
+    if(!_class)
+      img(src=src, alt=alt, width=width, height=height data-delay!=attributes.delay data-content!=attributes.content)
+    else
+      img(src=src, alt=alt, width=width, height=height, class=_class data-delay!=attributes.delay data-content!=attributes.content)
+
+mixin img2(src, alt, isPCSP, _class)
+  - const { width, height } = imageSize(src);
+    if(!alt)
+      - alt = ""
+    if(isPCSP)
+      - const spSrc = src.replace(/(.jpg|.png|.webp|.svg)/, "_sp$1");
+      - const widthSP = imageSize(spSrc).width;
+      - const heightSP = imageSize(spSrc).height;
+      img(src=src, alt=alt, width=width, height=height, class="display-pc" data-delay!=attributes.delay data-content!=attributes.content)
+      img(src=spSrc, alt=alt, width=widthSP, height=heightSP, class="display-sp" data-delay!=attributes.delay data-content!=attributes.content)
+    else
+      if(!_class)
+        img(src=src, alt=alt, width=width, height=height data-delay!=attributes.delay data-content!=attributes.content)
+      else
+        img(src=src, alt=alt, width=width, height=height, class=_class data-delay!=attributes.delay data-content!=attributes.content)

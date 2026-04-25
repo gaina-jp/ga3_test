@@ -1,0 +1,8 @@
+.wait, .waiting {
+  opacity: 0;
+}
+
+.animation, .animated {
+  opacity: 1;
+  transition: opacity .3s linear;
+}

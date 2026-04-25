@@ -1,0 +1,1 @@
+{"version":3,"file":"script.js","mappings":"mBAAAA,QAAQC,IAAI,sB","sources":["webpack://default/./src/assets/js/script.js"],"sourcesContent":["console.log('Hello from Webpack!');"],"names":["console","log"],"sourceRoot":""}

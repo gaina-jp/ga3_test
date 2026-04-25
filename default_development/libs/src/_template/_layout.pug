@@ -1,0 +1,32 @@
+html(lang='ja')
+  -
+    var siteName = ''
+    var rootPath = ''
+    var assetDir = 'assets/'
+    var thisPage = ''
+    var ogType = 'website'
+    if (thisPage !== 'top')
+      ogType = 'article'
+
+  include ../__utility/pug/_mixin
+
+  block vars
+
+  head
+    include _meta.html
+    block head
+    block css
+
+  body(id=thisPage)
+    include _header
+
+    main
+      block main
+
+    block modal
+
+    include _footer
+
+    block js
+      script(src=assetDir+"js/script.js")
+

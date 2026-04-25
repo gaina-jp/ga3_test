@@ -1,0 +1,13 @@
+@use "../../__utility/css/variables";
+@use "../../__utility/css/module";
+@use "../../__utility/css/easing";
+
+body {
+  font-family: sans-serif;
+  text-align: center;
+  background-color: #f4f4f4;
+
+  @include module.pc {
+    background-color: #fff;
+  }
+}
