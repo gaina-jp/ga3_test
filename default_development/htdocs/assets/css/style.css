@@ -1,11 +1,1 @@
-body {
-  font-family: sans-serif;
-  text-align: center;
-  background-color: #f4f4f4;
-}
-@media only screen and (min-width: 828.01px) {
-  body {
-    background-color: #fff;
-  }
-}
-/*# sourceMappingURL=style.css.map */
+.wait,.waiting{opacity:0}.animation,.animated{opacity:1;transition:opacity var(--duration) linear}.g-modal{display:none}.g-modal img{display:block;width:100%;height:auto}.g-modal-wrap{display:block;align-items:center;width:100%;height:100%;padding:0.1px 0;box-sizing:border-box;position:fixed;inset:0;z-index:var(--z-modal);overflow:auto}@media only screen and (min-width: 828.01px){.g-modal-wrap{display:block}}.g-modal-content{display:none;width:calc(792 / 1000 * 100%);background:#fff;box-sizing:border-box;margin:0 auto;position:relative;z-index:1}@media only screen and (min-width: 828.01px){.g-modal-content{width:var(--max-width);margin:20px auto}}.g-modal-content--open{display:grid}.g-modal-content.not-centering{place-content:inherit;overflow:auto}.g-modal-content.show .g-modal-box{-webkit-transform:translate(0);transform:translate(0);opacity:1}.g-modal-box{width:calc(764 / 784 * 100%);background:#fff;margin:calc(6 / 784 * 100%) auto;-webkit-transform:translate(0);transform:translate(0);opacity:0}.g-modal--close{text-align:center;margin:0 0 calc(80 / 784 * 100%);cursor:pointer}.g-modal--close span{text-decoration:underline}.g-modal-overlay{width:100%;height:100%;position:fixed;inset:0;z-index:0}.g-modal--btn{cursor:pointer}:root{--color-font:#333;--color-base:#fff;--color-main:#333;--color-accent:#333;--content-width:800px;--max-width:1280px;--z-header:100;--z-modal:1000;--duration:.3s}body{font-family:"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif;color:var(--color-font);background-color:var(--color-base);line-height:1.6;letter-spacing:0.04em}

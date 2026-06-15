@@ -6,7 +6,6 @@ const __dirname = path.dirname(__filename);
 
 const dest = "../htdocs";
 const src = "./src";
-const port = 11741;
 
 // 開発環境か本番環境かの判定 (例: NODE_ENV=development npx gulp)
 export const isDev = process.env.NODE_ENV === 'development';
@@ -49,15 +48,6 @@ export default {
       optimization: {
         minimize: !isDev
       },
-      module: {
-        rules: [
-          {
-            test: /\.js$/,
-            exclude: /node_modules/,
-            use: "babel-loader"
-          }
-        ]
-      },
       resolve: {
         modules: [path.resolve(__dirname, '../'), 'node_modules'],
         extensions: [".js"]
@@ -66,20 +56,7 @@ export default {
     }
   },
   
-  uglify: {
-    minify: true,
-    options: {
-      output: {
-        comments: /^!/
-      }
-    }
-  },
   sass: {
-    src: {
-      common: src + "/common/css/!(_)*",
-      all: src + "/**/css/**/!(_)*",
-      exception: "!" + src + "/__utility/css/**/*"
-    },
     output: "style.css",
     autoprefixer: {
       overrideBrowserslist: ["last 1 versions"]
@@ -92,7 +69,6 @@ export default {
   server: {
     host: "localhost",
     root: dest,
-    port: port.toString(),
     livereload: true
   }
 };

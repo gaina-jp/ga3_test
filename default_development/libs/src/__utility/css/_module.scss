@@ -1,20 +1,20 @@
 @forward "variables";
-@use "variables";
+@use "variables" as v;
 
 @mixin pc {
-  @media only screen and (min-width: #{variables.$sw + 0.01}px) {
+  @media only screen and (min-width: #{v.$sw + 0.01}px) {
     @content;
   }
 }
 
 @mixin tablet {
-  @media only screen and (max-width: #{variables.$maxW}px) and (min-width: #{variables.$sw + 0.01}px) {
+  @media only screen and (max-width: #{v.$maxW}px) and (min-width: #{v.$sw + 0.01}px) {
     @content;
   }
 }
 
 @mixin sp {
-  @media only screen and (max-width: #{variables.$sw}px) {
+  @media only screen and (max-width: #{v.$sw}px) {
     @content;
   }
 }

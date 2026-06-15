@@ -10,7 +10,6 @@ export const serverTask = (done) => {
       baseDir: config.dest.top
     },
     host: config.server.host,
-    port: parseInt(config.server.port, 10),
     open: true,
     notify: false // 右上の通知を消す場合
   });

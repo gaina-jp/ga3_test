@@ -21,8 +21,8 @@ export const watchTask = function(cb){
   
   // コピーや画像最適化は時間がかかったり、stream対応が複雑なため
   // 処理が終わった後に reload タスクを呼ぶと確実です。
-  watch(config.src.top + "/**/*.+(jpg|png|gif|svg)", series(imageTask, reload));
-  watch(config.src.top + "/**/*.+(webp|mp4|pdf)", series(copyTask, reload));
+  watch(config.src.top + "/**/*.+(jpg|png|gif|svg|webp)", series(imageTask, reload));
+  watch(config.src.top + "/**/*.+(mp4|pdf)", series(copyTask, reload));
   
   watch(config.src.top + config.src.pug, pugTask);
   cb();

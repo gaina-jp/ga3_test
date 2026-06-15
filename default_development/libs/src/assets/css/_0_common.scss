@@ -1,13 +1,38 @@
-@use "../../__utility/css/variables";
-@use "../../__utility/css/module";
-@use "../../__utility/css/easing";
+@use "../../__utility/css/variables" as v;
 
+// =========================================================
+// デザイントークン（CSS変数 / :root）
+// 色・余白・z-index・アニメーション速度などの共通値はここで一元管理し、
+// 各 SCSS からは var(--xxx) で参照する（生値の直書き＝マジックナンバーは避ける）。
+// 新しい共通値はこの :root に追加し、プロジェクトごとに値を上書きする。
+// =========================================================
+:root {
+  // カラー
+  --color-font: #333;
+  --color-base: #fff;
+  --color-main: #333;
+  --color-accent: #333;
+
+  // レイアウト幅（メディアクエリ用 SCSS 変数 $maxW と値を共有）
+  --content-width: 800px;
+  --max-width: #{v.$maxW}px;
+
+  // z-index
+  --z-header: 100;
+  --z-modal: 1000;
+
+  // アニメーション速度
+  --duration: .3s;
+}
+
+// =========================================================
+// 全体共通のベーススタイル
+// letter-spacing など全体共通値は body に一括指定し、例外箇所だけ上書きする
+// =========================================================
 body {
-  font-family: sans-serif;
-  text-align: center;
-  background-color: #f4f4f4;
-
-  @include module.pc {
-    background-color: #fff;
-  }
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  color: var(--color-font);
+  background-color: var(--color-base);
+  line-height: 1.6;
+  letter-spacing: .04em;
 }
