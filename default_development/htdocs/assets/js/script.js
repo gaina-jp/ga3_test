@@ -1,2 +1,140 @@
-(function(){var e=class{constructor(){this.html=document.querySelector(`html`),this.body=document.querySelector(`body`),this.currentModal=null}init(){this.body.addEventListener(`click`,e=>{e.target.closest(`.g-modal--btn`)&&this.open(e)})}open(e){let t=e.target.closest(`.g-modal--btn`);if(!t)return;let n=t.dataset.modalId,r=t.dataset.modalContent;if(!n||!r){console.error(`Modal trigger requires data-modal-id and data-modal-content attributes.`);return}let i=document.getElementById(n);if(!i){console.error(`Modal with id "${n}" not found.`);return}this.currentModal=i;let a=i.querySelector(`.g-modal-overlay`),o=i.querySelector(`.g-modal--close`),s=i.querySelector(`.g-modal-wrap`),c=i.querySelector(`.g-modal-content[data-modal-content="${r}"]`);if(!c||!a||!o||!s){console.error(`Required modal elements not found in modal "${n}".`);return}this.html.classList.add(`is-modal`);let{modalUrl:l,modalColor:u,modalOverlay:d,modalOpacity:f,modalYoutube:p}=c.dataset;if(l?c.style.background=`url(${l}) center center / 100% 100%`:u&&(c.style.background=u),p){let e=c.querySelector(`.movie`);e&&(e.innerHTML=`<iframe width="560" height="315" src="https://www.youtube.com/embed/${p}?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`)}d&&(a.style.background=d),f&&(a.style.opacity=f),c.classList.add(`g-modal-content--open`,`show`),i.style.display=`flex`,s.scrollTop=0;let m=()=>this.close();a.addEventListener(`click`,m,{once:!0}),o.addEventListener(`click`,m,{once:!0})}close(){if(!this.currentModal)return;let e=this.currentModal,t=e.querySelector(`.g-modal-overlay`),n=e.querySelector(`.g-modal-content--open`);if(n){let e=n.querySelector(`.movie`);e&&(e.innerHTML=``),n.style.background=``,n.classList.remove(`g-modal-content--open`,`show`,`not-centering`)}e.style.display=``,this.html.classList.remove(`is-modal`),t&&(t.style.background=``,t.style.opacity=``),this.currentModal=null}},t=class{static animationStart(e){let t=typeof e==`string`?document.querySelector(e):e;t&&t.querySelectorAll(`.wait`).forEach(e=>{let t=parseInt(e.dataset.delay||`0`,10);setTimeout(()=>{e.classList.remove(`wait`),e.classList.add(`animation`)},t)})}static resetAnimate(e){let t=typeof e==`string`?document.querySelector(e):e;t&&(t.querySelectorAll(`.animation`).forEach(e=>{e.classList.add(`wait`),e.classList.remove(`animation`)}),t.querySelectorAll(`.animated`).forEach(e=>{e.classList.add(`waiting`),e.classList.remove(`animated`)}))}constructor(e={}){this.observer=null,this._handleIntersection=e=>{for(let t of e){let e=t.target;if(t.isIntersecting&&e.classList.contains(`waiting`)){let t=parseInt(e.dataset.delay||`0`,10);setTimeout(()=>{e.classList.add(`animated`),e.classList.remove(`waiting`)},Math.max(0,t)),this.observer?.unobserve(e)}}},this.options={rootMargin:e.rootMargin??`0px 0px -20% 0px`}}start(){this.stop(),this.observer=new IntersectionObserver(this._handleIntersection,{root:null,rootMargin:this.options.rootMargin,threshold:0}),document.querySelectorAll(`.waiting`).forEach(e=>{this.observer.observe(e)})}stop(){this.observer?.disconnect(),this.observer=null}};new e().init(),new t().start()})();
+(function() {
+	//#region src/__utility/js/modal.ts
+	var Modal = class {
+		constructor() {
+			this.html = document.querySelector("html");
+			this.body = document.querySelector("body");
+			this.currentModal = null;
+		}
+		init() {
+			this.body.addEventListener("click", (event) => {
+				if (event.target.closest(".g-modal--btn")) this.open(event);
+			});
+		}
+		open(event) {
+			const trigger = event.target.closest(".g-modal--btn");
+			if (!trigger) return;
+			const modalId = trigger.dataset.modalId;
+			const contentId = trigger.dataset.modalContent;
+			if (!modalId || !contentId) {
+				console.error("Modal trigger requires data-modal-id and data-modal-content attributes.");
+				return;
+			}
+			const modal = document.getElementById(modalId);
+			if (!modal) {
+				console.error(`Modal with id "${modalId}" not found.`);
+				return;
+			}
+			this.currentModal = modal;
+			const overlay = modal.querySelector(".g-modal-overlay");
+			const closeButton = modal.querySelector(".g-modal--close");
+			const modalWrap = modal.querySelector(".g-modal-wrap");
+			const content = modal.querySelector(`.g-modal-content[data-modal-content="${contentId}"]`);
+			if (!content || !overlay || !closeButton || !modalWrap) {
+				console.error(`Required modal elements not found in modal "${modalId}".`);
+				return;
+			}
+			this.html.classList.add("is-modal");
+			const { modalUrl, modalColor, modalOverlay, modalOpacity, modalYoutube } = content.dataset;
+			if (modalUrl) content.style.background = `url(${modalUrl}) center center / 100% 100%`;
+			else if (modalColor) content.style.background = modalColor;
+			if (modalYoutube) {
+				const movieContainer = content.querySelector(".movie");
+				if (movieContainer) movieContainer.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${modalYoutube}?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+			}
+			if (modalOverlay) overlay.style.background = modalOverlay;
+			if (modalOpacity) overlay.style.opacity = modalOpacity;
+			content.classList.add("g-modal-content--open", "show");
+			modal.style.display = "flex";
+			modalWrap.scrollTop = 0;
+			const closeHandler = () => this.close();
+			overlay.addEventListener("click", closeHandler, { once: true });
+			closeButton.addEventListener("click", closeHandler, { once: true });
+		}
+		close() {
+			if (!this.currentModal) return;
+			const modal = this.currentModal;
+			const overlay = modal.querySelector(".g-modal-overlay");
+			const openContent = modal.querySelector(".g-modal-content--open");
+			if (openContent) {
+				const movieContainer = openContent.querySelector(".movie");
+				if (movieContainer) movieContainer.innerHTML = "";
+				openContent.style.background = "";
+				openContent.classList.remove("g-modal-content--open", "show", "not-centering");
+			}
+			modal.style.display = "";
+			this.html.classList.remove("is-modal");
+			if (overlay) {
+				overlay.style.background = "";
+				overlay.style.opacity = "";
+			}
+			this.currentModal = null;
+		}
+	};
+	//#endregion
+	//#region src/__utility/js/scroller.ts
+	var Scroller = class {
+		static animationStart(container) {
+			const containerEl = typeof container === "string" ? document.querySelector(container) : container;
+			if (!containerEl) return;
+			containerEl.querySelectorAll(".wait").forEach((element) => {
+				const delay = parseInt(element.dataset.delay || "0", 10);
+				setTimeout(() => {
+					element.classList.remove("wait");
+					element.classList.add("animation");
+				}, delay);
+			});
+		}
+		static resetAnimate(container) {
+			const containerEl = typeof container === "string" ? document.querySelector(container) : container;
+			if (!containerEl) return;
+			containerEl.querySelectorAll(".animation").forEach((el) => {
+				el.classList.add("wait");
+				el.classList.remove("animation");
+			});
+			containerEl.querySelectorAll(".animated").forEach((el) => {
+				el.classList.add("waiting");
+				el.classList.remove("animated");
+			});
+		}
+		constructor(options = {}) {
+			this.observer = null;
+			this._handleIntersection = (entries) => {
+				for (const entry of entries) {
+					const target = entry.target;
+					if (entry.isIntersecting && target.classList.contains("waiting")) {
+						const delay = parseInt(target.dataset.delay || "0", 10);
+						setTimeout(() => {
+							target.classList.add("animated");
+							target.classList.remove("waiting");
+						}, Math.max(0, delay));
+						this.observer?.unobserve(target);
+					}
+				}
+			};
+			this.options = { rootMargin: options.rootMargin ?? "0px 0px -20% 0px" };
+		}
+		start() {
+			this.stop();
+			this.observer = new IntersectionObserver(this._handleIntersection, {
+				root: null,
+				rootMargin: this.options.rootMargin,
+				threshold: 0
+			});
+			document.querySelectorAll(".waiting").forEach((target) => {
+				this.observer.observe(target);
+			});
+		}
+		stop() {
+			this.observer?.disconnect();
+			this.observer = null;
+		}
+	};
+	//#endregion
+	//#region src/assets/js/script.ts
+	new Modal().init();
+	new Scroller().start();
+	//#endregion
+})();
+
 //# sourceMappingURL=script.js.map

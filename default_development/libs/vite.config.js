@@ -10,7 +10,9 @@ export default defineConfig(({ mode }) => ({
   root: path.resolve(__dirname, '../htdocs'),
   server: {
     open: true,
-    // Cloudflare Tunnel 等で外部公開する場合は host: true を追加
+    host: true,
+    allowedHosts: true,
+    port: 5474,
   },
   build: {
     lib: {
