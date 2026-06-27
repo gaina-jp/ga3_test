@@ -2,7 +2,6 @@ import gulp from 'gulp';
 import pug from 'gulp-pug';
 import gulpData from 'gulp-data';
 import plumber from 'gulp-plumber';
-import browserSync from 'browser-sync';
 import imageSize from 'image-size';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -26,7 +25,7 @@ const imageData = function(){
           return imageSize(filePath);
         } catch (e) {
           console.error(`❌ ImageSize ERROR: Could not find ${imgSrc}`);
-          return {}; // エラーで止まらないように空を返す
+          return {};
         }
       },
     };
@@ -49,8 +48,7 @@ export const pugTask = () => {
       pretty: true,
       doctype: 'html'
     }))
-    .pipe(dest(config.dest.top))
-    .pipe(browserSync.stream()); // Browsersyncの更新通知
+    .pipe(dest(config.dest.top));
 };
 
 task("pug", pugTask);

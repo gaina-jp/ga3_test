@@ -263,3 +263,6 @@ _test
 test*
 
 .env
+
+# Vite cache
+**/.vite/

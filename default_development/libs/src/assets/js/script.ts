@@ -1,5 +1,5 @@
-import Modal from '../../__utility/js/modal.js';
-import Scroller from '../../__utility/js/scroller.js';
+import Modal from '../../__utility/js/modal';
+import Scroller from '../../__utility/js/scroller';
 
 // 共通モーダル
 // <button class="g-modal--btn" data-modal-id="xxx" data-modal-content="yyy"> で開閉

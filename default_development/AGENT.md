@@ -1,15 +1,16 @@
 # フロントエンド開発ルール
 
 ## 技術スタックとコマンド
-- **構成**: Pug + SCSS + Gulp + webpack（静的サイト雛形）。作業ディレクトリはこのプロジェクト直下の `libs/`。
+- **構成**: Pug + SCSS + TypeScript + Gulp + Vite（静的サイト雛形）。作業ディレクトリはこのプロジェクト直下の `libs/`。
 - **コマンド**（`libs/` で実行）:
-    - `npm run dev`: 開発サーバー起動（browser-sync / ポートは自動割り当て / watch + ライブリロード）
-    - `npm run build`: 本番ビルド（`../htdocs` へ出力、CSS/画像を圧縮）
-    - `npm run lint`: ESLint（`src/**/*.js`）+ Stylelint（`src/**/*.scss`）
+    - `npm run dev`: 開発サーバー起動（Vite / ポートは自動割り当て / Gulp watch + Vite TS watch + ライブリロード）
+    - `npm run build`: 本番ビルド（`../htdocs` へ出力、CSS/画像を圧縮、TS をバンドル・ミニファイ）
+    - `npm run typecheck`: TypeScript 型チェック（`tsc --noEmit`）
+    - `npm run lint`: 型チェック + ESLint（`src/**/*.ts`）+ Stylelint（`src/**/*.scss`）
     - `npm run lint:fix`: 自動修正付きで Lint 実行
 - **ライブラリ方針**: CDNは使わず npm 導入してバンドルに含める。
     - カルーセルは **Swiper**（`import Swiper from 'swiper'` + 必要モジュールを個別 import）。
-- **Lint**: ESLint v9（flat config / `eslint.config.js`）+ Stylelint（`stylelint-config-standard-scss`）。`@eslint/js` は ESLint 本体と同バージョンに固定。
+- **Lint**: ESLint v9（flat config / `eslint.config.js`）+ `@typescript-eslint/parser` + Stylelint（`stylelint-config-standard-scss`）。型チェックは `tsc --noEmit`（`npm run typecheck`）で行う。`@eslint/js` は ESLint 本体と同バージョンに固定。
 
 ## プロジェクト構成と編集ルール（重要）
 - **ソースディレクトリ**: `libs/src/`（**※AIの編集対象は必ずこのディレクトリ内のみとしてください**）
@@ -38,6 +39,9 @@
     - `[種類]` の例: `img`（写真・イラスト）, `bg`（背景）, `icon`（アイコン）, `logo`（ロゴ）, `graph`（グラフ）, `deco`（装飾）など。
     - 同一セクション内に同じ種類の画像が複数ある場合は、種類の直後に連番（例: `img1-about.png`, `img2-about.png`）。
     - 画像が `assets/` にまだ無い場合も、上記命名ルールに従った画像URIを入れておいてください。
+- **パスはすべて相対パスで記述する（`rootPath` 変数経由）**: 内部リンク・画像 src・CSS の `url()` など、プロジェクト内のすべてのURLパスには絶対パスを直書きせず、相対パスを使用してください。Pug 内では `rootPath` 変数を経由して記述します。ディレクトリ階層・配置場所が変わっても破綻しない設計になります（下層ページでは `rootPath = "../"` のように深さに合わせて設定すること）。
+    - ❌ `a(href="/about/")` / `img(src="/assets/img/logo.svg")` （絶対パス直書き）
+    - ⭕ `a(href=rootPath + "about/")` / `img(src=rootPath + "assets/img/logo.svg")` （`rootPath` 経由）
 
 ### CSS (SCSS)
 - **BEM記法の厳守**: クラス名は厳格にBEM (Block__Element--Modifier) に従い、命名のバッティングを防ぎ、構造が直感的に理解できるマルチクラス設計にしてください。
@@ -68,6 +72,7 @@
     - **カラー・余白・z-index・アニメーション速度などの共通値は、SCSS変数ではなく CSS変数（`var()`）を優先**して使用してください。
     - **SCSS変数（`_variables.scss`）は、コンパイル時に値が必要なものに限定**します（メディアクエリの条件値 `$sw`/`$maxW`、vw 換算の基準幅 `$sp`）。CSS変数はメディアクエリの条件部では使えないため、ブレイクポイントは SCSS 変数で保持します。
 - **レスポンシブ（`@include m.sp`）の記述位置**: SP 用の上書きは Element ごとに散らさず、**親 Block の末尾に `@include m.sp { ... }` を 1 つ置き、その中に各 Element の SP 上書きをまとめて記述**してください（PC の既定宣言とレスポンシブ差分を分離し見通しを良くするため）。Block 自身の SP 上書きは集約ブロック内で `& { ... }` を使う。
+- **SP/PCの表示順差はHTML複製せず `order` で制御**: DOM順はPC基準で統一し、SP時（`@include m.sp { ... }`）だけ CSS の `order` プロパティで要素を並べ替えてください。同一コンテンツをSP用・PC用と2重にHTMLへ書くことは避けること。
 - **`calc()` は計算結果（数値）を CSS に出力させず、式のまま残す**: SCSS 内の `calc()` は、Sass がコンパイル時に割り算・掛け算を簡約して結果の数値だけを出力しないようにしてください。デザインの意図（元の数値・比率）と画面幅への追従を保つため、`calc()` 式そのものを CSS に残します。そのために、**演算に含まれる数値・変数（最低でも分母のいずれか）を `#{}` で補間**して Sass の簡約を抑止してください。これは下記の SP の vw 換算や `line-height` の比率に限らず、**`%` / `vw` 換算・比率計算・余白・サイズなどすべての `calc()`** に適用します。
     - ❌ `width: calc(160 / 375 * 100vw);`（Sass が `42.6667vw` に簡約して出力してしまう）
     - ⭕ `width: calc(160 / #{v.$sp} * 100vw);`（`calc(160 / 375 * 100vw)` がそのまま CSS に出力される）
@@ -79,19 +84,20 @@
     - ❌ `line-height: 35px;` ／ ⭕ `line-height: calc(35 / #{22});`（行間 35 / 文字サイズ 22）
     - `letter-spacing` は Figma の % 値をそのまま em に対応させます（Figma `10` → `0.1em`、`0` → `0`）。
 
-### JavaScript
-- Webpackでバンドルされるため、ESModules (`import`/`export`) 形式で記述してください。
-    - Webpack 5 の strict ESM 仕様により、モジュール間の `import` には拡張子 `.js` が必須です（例: `import Modal from '../../__utility/js/modal.js';`）。
-- DOM操作や機能追加を行う場合は、保守性を考慮しクラス化やモジュール分割を行ってください。共通ロジックは `libs/src/__utility/js/` に切り出し、各ページの `script.js` から `import` してください。
+### TypeScript
+- Vite がバンドルするため、ESModules (`import`/`export`) 形式で記述してください。ファイル拡張子は `.ts`。
+    - モジュール間の `import` は拡張子を省略できます（例: `import Modal from '../../__utility/js/modal';`）。
+- DOM操作や機能追加を行う場合は、保守性を考慮しクラス化やモジュール分割を行ってください。共通ロジックは `libs/src/__utility/js/` に切り出し、各ページの `script.ts` から `import` してください。
+- **型付けの方針**: クラスのプロパティ・メソッドの引数・戻り値には型を付けてください。`any` は原則使用不可。DOM 要素は `querySelector<HTMLElement>` のようにジェネリクスで型を絞ること。
+- **`this` バインドは arrow function class field で**: `bind()` の代わりに `private readonly handler = () => { ... }` 形式で定義してください。
 - **単一責任の原則**: 1つの関数やクラスが、1つのことだけを行う設計にすること。
-- **純粋関数の推奨**: 副作用を最小限に抑え、テストが容易で再利用できる汎用的なロジックにすること。
-- **マジックナンバーの排除**: 重要な定数はオブジェクトや共通定数モジュール（`__utility/js/constants.js` 等）で共通化し、コードの意図がドキュメントなしで伝わるよう疎結合に書くこと。
-- イベントリスナーの登録は要素数分の累積に注意し、不要なら `removeEventListener` するか、ページ全体で1つに集約すること（既存の `modal.js` のようにイベント委譲を活用）。
-- **共通UI**: モーダル（`_modal.scss` / `modal.js`）とスクロール出現アニメ（`_scroller.scss` / `scroller.js`）は `style.scss` / `script.js` から接続済み。対象要素がなければ無害な no-op。
+- **マジックナンバーの排除**: 重要な定数はオブジェクトや共通定数モジュール（`__utility/js/constants.ts` 等）で共通化すること。
+- イベントリスナーの登録は要素数分の累積に注意し、不要なら `removeEventListener` するか、ページ全体で1つに集約すること（`modal.ts` のようにイベント委譲を活用）。
+- **共通UI**: モーダル（`_modal.scss` / `modal.ts`）とスクロール出現アニメ（`_scroller.scss` / `scroller.ts`）は `style.scss` / `script.ts` から接続済み。対象要素がなければ無害な no-op。
 
 ### アセット（画像やファイルの配置ルール）
 - 新しい画像やファイルを追加する場合、タスクはGulpの watch で自動処理されるため、ファイルの配置のみを行ってください。
-    - **圧縮対象 (`.jpg`, `.png`, `.gif`, `.svg`, `.webp`)**: `libs/src/` 以下の適切なフォルダに配置。`.webp` は `imagemin-webp` で圧縮されます（jpg/png は webp へ変換せず、各形式のまま圧縮）。
+    - **圧縮対象 (`.jpg`, `.png`, `.gif`, `.svg`, `.webp`)**: `libs/src/` 以下の適切なフォルダに配置。`.webp` は `imagemin-webp` で圧縮されます（jpg/png は webp へ変換せず、各形式のまま圧縮）。新規に用意する写真・イラスト素材は **WebP を優先フォーマット** にしてください。
     - **コピー対象 (`.mp4`, `.pdf` など)**: `libs/src/` 以下の適切なフォルダに配置。（圧縮されずそのままコピーされます）
 - 画像は `+img` / `+img2` mixin で配置すれば `.webp` でも `width` / `height` が自動付与されます（`image-size` が webp 対応のため）。
 
@@ -103,14 +109,15 @@
 
 ## セクションごとのファイル分割ルール（重要）
 - 1ページ内に複数のセクション（Hero, Aboutなど）が存在する場合、可読性と保守性のために Pug と SCSS をセクション毎に分割して実装してください。
+- **セクション番号プレフィックス方式**: ファイル名は `_1_hero.pug` / `_1_hero.scss`、`_2_about.pug` / `_2_about.scss` のように番号を付けてください。番号でinclude順序・実装順序を制御でき、追加・並び替えが容易になります。共通パーツ（header/footer/nav/btn など）は `_99_*.scss` に集約し、`style.scss` から `@forward` します。
 - **Pugの分割**:
-    - Gulpの仕様上、直接HTMLとして出力させないために、分割するファイル名は必ず `_` (アンダースコア) から始めてください。（例: `_hero.pug`, `_about.pug`）
+    - Gulpの仕様上、直接HTMLとして出力させないために、分割するファイル名は必ず `_` (アンダースコア) から始めてください。（例: `_1_hero.pug`, `_2_about.pug`）
     - 作成したパーツは、親となるページ（例: `index.pug`）から `include` して読み込んでください。
-    - 配置例: `libs/src/_components/_hero.pug` や、ページ専用フォルダ `libs/src/index/_hero.pug` など。
+    - 配置例: `libs/src/_components/_1_hero.pug` や、ページ専用フォルダ `libs/src/index/_1_hero.pug` など。
 - **SCSSの分割**:
-    - 同様に、ファイル名は必ず `_` (アンダースコア) から始めてください。（例: `_hero.scss`, `_about.scss`）
+    - 同様に、ファイル名は必ず `_` (アンダースコア) から始めてください。（例: `_1_hero.scss`, `_2_about.scss`）
     - 作成したパーツは、`libs/src/assets/css/style.scss` 等の親ファイルから `@forward` して読み込んでください。
-    - 配置例: `libs/src/assets/css/components/_hero.scss` や、ページ専用フォルダ `libs/src/assets/css/index/_hero.scss` など。
+    - 配置例: `libs/src/assets/css/components/_1_hero.scss` や、ページ専用フォルダ `libs/src/assets/css/index/_1_hero.scss` など。
 
 ## Figma MCP 連携の場合（※連携がない場合は無視）
 - Figmaのデザイン要素を実装する際は、デザインの意図（マージン、カラー、タイポグラフィ）を正確に CSS変数・SCSS変数へ変換してください。

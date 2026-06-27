@@ -1,15 +1,14 @@
 import gulp from 'gulp';
 import gulpSass from 'gulp-sass';
-import * as dartSass from 'sass';
+import * as sassEmbedded from 'sass-embedded';
 import plumber from 'gulp-plumber';
 import gulpif from 'gulp-if';
 import sourcemaps from 'gulp-sourcemaps';
 import autoprefixer from 'gulp-autoprefixer';
 import cleanCSS from 'gulp-clean-css';
-import browserSync from 'browser-sync';
 import config from '../config.js';
 
-const sassCompiler = gulpSass(dartSass);
+const sass = gulpSass(sassEmbedded);
 const { task, src, dest } = gulp;
 
 export const sassTask = () => {
@@ -21,12 +20,11 @@ export const sassTask = () => {
       }
     }))
     .pipe(gulpif(config.sass.sourcemap, sourcemaps.init()))
-    .pipe(sassCompiler(config.sass.opt))
+    .pipe(sass.sync(config.sass.opt))
     .pipe(autoprefixer(config.sass.autoprefixer))
     .pipe(gulpif(config.sass.minify, cleanCSS({level: 0})))
     .pipe(gulpif(config.sass.sourcemap, sourcemaps.write("/")))
-    .pipe(dest(config.dest.top + "/assets/css/"))
-    .pipe(browserSync.stream()); // Browsersyncの更新通知
+    .pipe(dest(config.dest.top + "/assets/css/"));
 };
 
 task("sass", sassTask);

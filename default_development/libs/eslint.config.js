@@ -1,5 +1,6 @@
 import js from '@eslint/js';
 import globals from 'globals';
+import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
@@ -7,14 +8,18 @@ export default [
   },
   js.configs.recommended,
   {
-    // ブラウザで動く src 配下のバンドル対象 JS（ESModules）
-    files: ['src/**/*.js'],
+    // ブラウザで動く src 配下の TypeScript
+    files: ['src/**/*.ts'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
+      parser: tsParser,
       globals: {
         ...globals.browser,
       },
+    },
+    rules: {
+      'no-undef': 'off', // TypeScript が担当するため無効化
     },
   },
   {
